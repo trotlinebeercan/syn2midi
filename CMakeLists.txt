@@ -24,6 +24,12 @@ set(FFMPEG_LIBS avcodec avdevice avfilter avformat avutil postproc swresample sw
 link_directories(${FFMPEG_LIBS_DIR})
 
 # syn2midi
-add_executable(syn2midi midi.cpp report.cpp getopt.c main.cpp)
-target_include_directories(syn2midi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${FFMPEG_INCS_DIR} ${MIDIFILE_INCS_DIR})
+set(SYN2MIDI_SRCS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/syn2midi")
+add_executable(syn2midi
+    ${SYN2MIDI_SRCS_DIR}/midi.cpp
+    ${SYN2MIDI_SRCS_DIR}/report.cpp
+    ${SYN2MIDI_SRCS_DIR}/getopt.c
+    ${SYN2MIDI_SRCS_DIR}/main.cpp
+)
+target_include_directories(syn2midi PUBLIC ${SYN2MIDI_SRCS_DIR} ${FFMPEG_INCS_DIR} ${MIDIFILE_INCS_DIR})
 target_link_libraries(syn2midi PUBLIC midifile ${FFMPEG_LIBS})
