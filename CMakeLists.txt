@@ -14,14 +14,21 @@ set(MIDIFILE_SRCS
     ${MIDIFILE_SRCS_DIR}/Options.cpp
 )
 
-add_library(midifile ${MIDIFILE_SRCS})
+add_library(midifile STATIC ${MIDIFILE_SRCS})
 target_include_directories(midifile PUBLIC ${MIDIFILE_INCS_DIR})
 
 # ffmpeg
 set(FFMPEG_INCS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/ffmpeg-dev/include")
 set(FFMPEG_LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/ffmpeg-dev/lib")
 set(FFMPEG_LIBS avcodec avdevice avfilter avformat avutil postproc swresample swscale)
-link_directories(${FFMPEG_LIBS_DIR})
+
+foreach(FFMPEG_LIB ${FFMPEG_LIBS})
+    add_library(${FFMPEG_LIB} STATIC IMPORTED)
+    set_target_properties(${FFMPEG_LIB} 
+        PROPERTIES 
+        IMPORTED_LOCATION "${FFMPEG_LIBS_DIR}/${FFMPEG_LIB}.lib"
+    )
+endforeach()
 
 # syn2midi
 set(SYN2MIDI_SRCS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/syn2midi")
@@ -32,4 +39,4 @@ add_executable(syn2midi
     ${SYN2MIDI_SRCS_DIR}/main.cpp
 )
 target_include_directories(syn2midi PUBLIC ${SYN2MIDI_SRCS_DIR} ${FFMPEG_INCS_DIR} ${MIDIFILE_INCS_DIR})
-target_link_libraries(syn2midi PUBLIC midifile ${FFMPEG_LIBS})
+target_link_libraries(syn2midi PRIVATE midifile ${FFMPEG_LIBS})
